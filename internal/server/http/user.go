@@ -2,6 +2,7 @@ package http
 
 import (
 	"net/http"
+
 	"github.com/gin-gonic/gin"
 	"github.com/ricardolonga/workshop-go/domain"
 )
@@ -13,5 +14,10 @@ func (h *handler) postUser(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, nil)
+	if !h.userService.IsValid(user) {
+		c.AbortWithStatus(http.StatusBadRequest)
+		return
+	}
+
+	c.JSON(http.StatusCreated, nil)
 }

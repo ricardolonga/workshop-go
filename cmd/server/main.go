@@ -1,11 +1,13 @@
 package main
 
 import (
-	"github.com/ricardolonga/workshop-go/internal/server/http"
-	"os/signal"
-	"syscall"
 	"os"
+	"os/signal"
 	"strings"
+	"syscall"
+
+	"github.com/ricardolonga/workshop-go/domain/user"
+	"github.com/ricardolonga/workshop-go/internal/server/http"
 )
 
 func main() {
@@ -16,11 +18,12 @@ func main() {
 	/*
 	 * Services...
 	 */
+	userService := user.NewService( /*referência de um userStorage*/ )
 
 	/*
 	 * Handler...
 	 */
-	handler := http.NewHandler()
+	handler := http.NewHandler(userService)
 
 	/*
 	 * Server...

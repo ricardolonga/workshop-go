@@ -8,7 +8,7 @@ GOTOOLS = \
 	github.com/kardianos/govendor \
 	golang.org/x/tools/cmd/cover
 
-all: image
+all: build image
 
 tools: ## Instalar as ferramentas de cobertura e gestão de dependências
 	go get -u -v $(GOTOOLS)
@@ -26,7 +26,7 @@ env: ## Subir ambiente necessário para os testes
 env-ip: ## Visualizar o IP do container do MongoDB
 	echo $$(docker inspect -f '{{.NetworkSettings.Networks.workshopgo_default.IPAddress}}' workshopgo_mongodb_1)
 
-do-test: goget ## [goget] Executar os testes
+do-test: ## Executar os testes
 	MONGO_URL=$$(docker inspect -f '{{.NetworkSettings.Networks.workshopgo_default.IPAddress}}' workshopgo_mongodb_1) go test $$(go list ./... | grep -v vendor)
 
 env-stop: ## Finalizar ambiente necessário para os testes

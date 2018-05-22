@@ -2,13 +2,19 @@ package http
 
 import (
 	"net/http"
+
 	"github.com/gin-gonic/gin"
+	"github.com/ricardolonga/workshop-go/domain"
 )
 
-type handler struct {}
+type handler struct {
+	userService domain.UserService
+}
 
-func NewHandler() http.Handler {
-	handler := &handler{}
+func NewHandler(userService domain.UserService) http.Handler {
+	handler := &handler{
+		userService: userService,
+	}
 
 	gin.SetMode(gin.ReleaseMode)
 
