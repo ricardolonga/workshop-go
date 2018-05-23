@@ -15,7 +15,10 @@ func New() *worker {
 }
 
 func (w *worker) Do(export *domain.Export, wg *sync.WaitGroup) {
-	fmt.Printf("escrevendo no arquivo: %s\n", export.Filename)
-	time.Sleep(5 * time.Second)
+	for i := 0; i < 2; i++ {
+		fmt.Printf("escrevendo no arquivo: %s...\n", export.Filename)
+		time.Sleep(time.Second)
+	}
+
 	wg.Done()
 }
