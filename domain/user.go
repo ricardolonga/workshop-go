@@ -1,5 +1,7 @@
 package domain
 
+import "fmt"
+
 type UserService interface {
 	IsValid(user *User) bool
 }
@@ -14,4 +16,8 @@ type User struct {
 
 func NewUser(name string, age int, phones []string) *User {
 	return &User{Name: name, Age: age, Phones: phones}
+}
+
+func (u *User) String() string {
+	return fmt.Sprintf("Name: %s - Age: %d", u.Name, u.Age)
 }

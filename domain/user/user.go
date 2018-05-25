@@ -2,12 +2,12 @@ package user
 
 import "github.com/ricardolonga/workshop-go/domain"
 
-type userService struct {}
+type service struct{}
 
-func NewService() *userService {
-	return &userService{}
+func NewService() *service {
+	return &service{}
 }
 
-func(u *userService) IsValid(user *domain.User) bool {
+func (*service) IsValid(user *domain.User) bool {
 	return user.Age > 18
 }

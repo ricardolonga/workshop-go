@@ -10,6 +10,11 @@ import (
 	"github.com/ricardolonga/workshop-go/internal/server/http"
 )
 
+//func main() {
+//	user := domain.User{Name: "Ricardo", Age: 31, Phones: []string{"48999792240"}}
+//	fmt.Printf("User: %+v", user)
+//}
+
 func main() {
 	/*
 	 * Storages...
