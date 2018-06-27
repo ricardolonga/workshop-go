@@ -1,9 +1,15 @@
 package domain
 
-import "fmt"
+import (
+	"fmt"
+)
 
 type UserService interface {
 	IsValid(user *User) bool
+}
+
+type UserStorage interface {
+	Insert(user *User) (*User, error)
 }
 
 type User struct {

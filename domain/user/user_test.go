@@ -12,7 +12,7 @@ import (
 func TestIsAValidUser(t *testing.T) {
 	user := domain.NewUser("Ricardo", 31, []string{"99979-2240"})
 
-	userService := NewService()
+	userService := NewService(nil)
 
 	assert.True(t, userService.IsValid(user))
 }
@@ -20,7 +20,7 @@ func TestIsAValidUser(t *testing.T) {
 func TestIsntAValidUser(t *testing.T) {
 	user := domain.NewUser("Ricardo", 17, []string{"99979-2240"})
 
-	userService := NewService()
+	userService := NewService(nil)
 
 	assert.False(t, userService.IsValid(user))
 }

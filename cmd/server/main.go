@@ -3,27 +3,40 @@ package main
 import (
 	"os"
 	"os/signal"
-	"strings"
 	"syscall"
 
+	"github.com/NeowayLabs/logger"
 	"github.com/ricardolonga/workshop-go/domain/user"
 	"github.com/ricardolonga/workshop-go/internal/server/http"
+	"github.com/ricardolonga/workshop-go/internal/storage/mongo"
 )
 
-//func main() {
-//	user := domain.User{Name: "Ricardo", Age: 31, Phones: []string{"48999792240"}}
-//	fmt.Printf("User: %+v", user)
-//}
+const (
+	envWorkshopServicePort = "WORKSHOP_SERVICE_PORT"
+	envDatabaseName        = "DATABASE_NAME"
+	envMongoURL            = "MONGO_URL"
+
+	defaultDatabaseName = "workshop"
+	defaultPort         = "8080"
+)
 
 func main() {
+	mongoURL := getMongoURL()
+	databaseName := getDatabaseName()
+
 	/*
 	 * Storages...
 	 */
+	userStorage, err := mongo.NewUserStorage(mongoURL, databaseName)
+	if err != nil {
+		logger.Error("error on creating a user storage instance: %q", err)
+		return
+	}
 
 	/*
 	 * Services...
 	 */
-	userService := user.NewService( /*referência de um userStorage*/ )
+	userService := user.NewService(userStorage)
 
 	/*
 	 * Handler...
@@ -33,7 +46,7 @@ func main() {
 	/*
 	 * Server...
 	 */
-	server := http.New(getPort(), handler)
+	server := http.New(getApplicationPort(), handler)
 	server.ListenAndServe()
 
 	/*
@@ -45,9 +58,23 @@ func main() {
 	server.Shutdown()
 }
 
-func getPort() string {
-	if port := strings.TrimSpace(os.Getenv("PORT")); port != "" {
-		return port
+func getApplicationPort() string {
+	return getEnvVar(envWorkshopServicePort, defaultPort)
+}
+
+func getMongoURL() string {
+	return getEnvVar(envMongoURL)
+}
+
+func getDatabaseName() string {
+	return getEnvVar(envDatabaseName, defaultDatabaseName)
+}
+
+func getEnvVar(envVar string, defaultValue ...string) string {
+	value := os.Getenv(envVar)
+	if value == "" && len(defaultValue) > 0 {
+		value = defaultValue[0]
 	}
-	return "8080"
+
+	return value
 }

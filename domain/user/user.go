@@ -2,10 +2,14 @@ package user
 
 import "github.com/ricardolonga/workshop-go/domain"
 
-type service struct{}
+type service struct {
+	userStorage domain.UserStorage
+}
 
-func NewService() *service {
-	return &service{}
+func NewService(userStorage domain.UserStorage) *service {
+	return &service{
+		userStorage: userStorage,
+	}
 }
 
 func (*service) IsValid(user *domain.User) bool {
