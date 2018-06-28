@@ -16,7 +16,7 @@ type userStorage struct {
 const collectionUsers = "users"
 
 func NewUserStorage(mongoURL, databaseName string) (*userStorage, error) {
-	session, err := NewMongoSession(mongoURL, databaseName)
+	session, err := NewMongoSession(mongoURL)
 	if err != nil {
 		return nil, err
 	}

@@ -27,20 +27,20 @@ func init() {
 
 func TestNewMongoSession(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
-		mappingStorage, err := mongo.NewMongoSession(mongoURL, "test_database")
+		mongoSession, err := mongo.NewMongoSession(mongoURL)
 		assert.NoError(t, err)
-		assert.NotNil(t, mappingStorage)
+		assert.NotNil(t, mongoSession)
 	})
 
 	t.Run("empty_url", func(t *testing.T) {
-		mappingStorage, err := mongo.NewMongoSession("", "test_database")
+		mongoSession, err := mongo.NewMongoSession("")
 		assert.Error(t, err)
-		assert.Nil(t, mappingStorage)
+		assert.Nil(t, mongoSession)
 	})
 
 	t.Run("invalid_url", func(t *testing.T) {
-		mappingStorage, err := mongo.NewMongoSession("192.168.123.123", "test_database")
+		mongoSession, err := mongo.NewMongoSession("192.168.123.123")
 		assert.Error(t, err)
-		assert.Nil(t, mappingStorage)
+		assert.Nil(t, mongoSession)
 	})
 }

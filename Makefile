@@ -31,7 +31,7 @@ do-test: ## Executar os testes
 
 env-stop: ## Finalizar ambiente necessário para os testes
 	docker-compose kill
-	docker-compose rm -f --all
+	docker-compose rm -f
 
 test: env do-test env-stop ## [env do-test env-stop]
 
@@ -45,6 +45,9 @@ build: clean test ## [clean test] Construir o binário
 
 image: ## Construir a imagem Docker
 	docker build -t=$(NAME):$(VERSION) .
+
+run-local: env
+	MONGO_URL=$$(docker inspect -f '{{.NetworkSettings.Networks.workshopgo_default.IPAddress}}' workshopgo_mongodb_1) go run ./cmd/server/main.go
 
 help:
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'

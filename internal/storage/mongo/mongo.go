@@ -8,7 +8,7 @@ import (
 	mgo "gopkg.in/mgo.v2"
 )
 
-func NewMongoSession(mongoURL, databaseName string) (*mgo.Session, error) {
+func NewMongoSession(mongoURL string) (*mgo.Session, error) {
 	if strings.TrimSpace(mongoURL) == "" {
 		return nil, errors.New("mongoURL is required")
 	}

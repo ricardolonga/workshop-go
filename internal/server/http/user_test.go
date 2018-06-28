@@ -6,10 +6,13 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
+	"fmt"
+
+	"io/ioutil"
+
 	"github.com/ricardolonga/workshop-go/domain"
 	"github.com/ricardolonga/workshop-go/domain/user"
-	"fmt"
+	"github.com/stretchr/testify/assert"
 )
 
 func init() {
@@ -31,6 +34,11 @@ func TestController(t *testing.T) {
 
 				return true
 			},
+
+			CreateFn: func(user *domain.User) (*domain.User, error) {
+				user.ID = "123"
+				return user, nil
+			},
 		}
 
 		router := NewHandler(userService)
@@ -44,6 +52,14 @@ func TestController(t *testing.T) {
 		router.ServeHTTP(response, req)
 
 		assert.Equal(t, http.StatusCreated, response.Code)
+
+		body, err := ioutil.ReadAll(response.Body)
+		assert.NoError(t, err)
+		assert.NotEmpty(t, body)
+
+		expectedBody := []byte(`{"id": "123", "name": "Ricardo Longa", "age": 31}`)
+
+		assert.JSONEq(t, string(expectedBody), string(body))
 
 		assert.Equal(t, 1, userService.IsValidCount)
 	})
