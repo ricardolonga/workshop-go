@@ -4,17 +4,12 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/ricardolonga/workshop-go/domain"
 )
 
-type handler struct {
-	userService domain.UserService
-}
+type handler struct{}
 
-func NewHandler(userService domain.UserService) http.Handler {
-	handler := &handler{
-		userService: userService,
-	}
+func NewHandler() http.Handler {
+	handler := &handler{}
 
 	gin.SetMode(gin.ReleaseMode)
 
