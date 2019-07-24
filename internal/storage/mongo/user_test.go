@@ -11,8 +11,7 @@ import (
 
 func TestUserStorage_Insert(t *testing.T) {
 	t.Run("insert successful", func(t *testing.T) {
-		databaseName, err := uuid.NewV4()
-		assert.NoError(t, err)
+		databaseName := uuid.NewV4()
 
 		userStorage, err := mongo.NewUserStorage(mongoURL, databaseName.String())
 		assert.NoError(t, err)

@@ -1,5 +1,11 @@
-version: '2'
+version: '3.5'
+networks:
+  my-network-name:
+    name: workshop
 services:
   mongodb:
-    image: mongo:3.7
+    container_name: workshop_mongo
+    image: mongo:3.6
     command: mongod --smallfiles --quiet --logpath=/dev/null
+    networks:
+      - my-network-name

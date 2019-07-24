@@ -1,6 +1,7 @@
 package mongo_test
 
 import (
+	"os"
 	"testing"
 
 	"github.com/NeowayLabs/logger"
@@ -15,7 +16,7 @@ var (
 )
 
 func init() {
-	mongoURL = "172.26.0.2" // os.Getenv("MONGO_URL")
+	mongoURL = os.Getenv("MONGO_URL")
 	if mongoURL != "" {
 		if mongoSession, err := mgo.Dial(mongoURL); err != nil {
 			logger.Fatal("mongo connection failed: %q", err)
