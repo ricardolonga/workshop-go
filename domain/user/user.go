@@ -1,29 +1,22 @@
 package user
 
-import "github.com/ricardolonga/workshop-go/domain"
+import (
+	"github.com/ricardolonga/workshop-go/domain"
+	uuid "github.com/satori/go.uuid"
+)
 
-type service struct {
-	userStorage domain.UserStorage
+type Service struct {
 }
 
-func NewService(userStorage domain.UserStorage) *service {
-	return &service{
-		userStorage: userStorage,
-	}
+func NewService() *Service {
+	return &Service{}
 }
 
-func (*service) IsValid(user *domain.User) bool {
-	return user.Age > 18
+func (*Service) IsValid(user *domain.User) bool {
+	return false
 }
 
-func (s *service) Create(user *domain.User) (*domain.User, error) {
-	return s.userStorage.Insert(user)
-}
-
-func (s *service) Retrieve(userID string) (*domain.User, error) {
-	return s.userStorage.GetByID(userID)
-}
-
-func (s *service) Delete(userID string) error {
-	return s.userStorage.Delete(userID)
+func (s *Service) Create(user *domain.User) (*domain.User, error) {
+	user.ID = uuid.NewV4().String()
+	return user, nil
 }

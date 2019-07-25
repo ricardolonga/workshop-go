@@ -2,90 +2,76 @@ package http
 
 import (
 	"bytes"
+	"encoding/json"
+	"github.com/ricardolonga/workshop-go/domain"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
-	"fmt"
-
 	"io/ioutil"
 
-	"github.com/ricardolonga/workshop-go/domain"
-	"github.com/ricardolonga/workshop-go/domain/user"
 	"github.com/stretchr/testify/assert"
 )
 
-func init() {
-	fmt.Println("init...")
+type userServiceMock struct {
+	IsValidFn func(u *domain.User) bool
+	CreateFn  func(u *domain.User) (*domain.User, error)
 }
 
-func TestMain(m *testing.M) {
-	fmt.Println("antes...")
-	m.Run()
-	fmt.Println("...depois")
+func (usm *userServiceMock) IsValid(u *domain.User) bool {
+	return usm.IsValidFn(u)
+}
+
+func (usm *userServiceMock) Create(u *domain.User) (*domain.User, error) {
+	return usm.CreateFn(u)
 }
 
 func TestController(t *testing.T) {
-	t.Run("success", func(t *testing.T) {
-		userService := &user.ServiceMock{
-			IsValidFn: func(user *domain.User) bool {
-				assert.Equal(t, "Ricardo Longa", user.Name)
-				assert.Equal(t, 31, user.Age)
-
-				return true
-			},
-
-			CreateFn: func(user *domain.User) (*domain.User, error) {
-				user.ID = "123"
-				return user, nil
-			},
-		}
-
-		router := NewHandler(userService)
-
-		response := httptest.NewRecorder()
-		endpoint := "/v1/users"
-		body := []byte(`{"name": "Ricardo Longa", "age": 31}`)
-
-		req, _ := http.NewRequest("POST", endpoint, bytes.NewReader(body))
-
-		router.ServeHTTP(response, req)
-
-		assert.Equal(t, http.StatusCreated, response.Code)
-
-		body, err := ioutil.ReadAll(response.Body)
-		assert.NoError(t, err)
-		assert.NotEmpty(t, body)
-
-		expectedBody := []byte(`{"id": "123", "name": "Ricardo Longa", "age": 31}`)
-
-		assert.JSONEq(t, string(expectedBody), string(body))
-
-		assert.Equal(t, 1, userService.IsValidCount)
-	})
-
-	t.Run("failed", func(t *testing.T) {
-		userService := &user.ServiceMock{
-			IsValidFn: func(user *domain.User) bool {
-				assert.Equal(t, "Ricardo Longa", user.Name)
-				assert.Equal(t, 17, user.Age)
-
+	t.Run("invalid user", func(t *testing.T) {
+		userService := &userServiceMock{
+			IsValidFn: func(u *domain.User) bool {
+				assert.NotNil(t, u)
 				return false
 			},
 		}
 
 		router := NewHandler(userService)
 
-		response := httptest.NewRecorder()
-		endpoint := "/v1/users"
 		body := []byte(`{"name": "Ricardo Longa", "age": 17}`)
+		req, _ := http.NewRequest(http.MethodPost, "/v1/users", bytes.NewReader(body))
 
-		req, _ := http.NewRequest("POST", endpoint, bytes.NewReader(body))
+		res := httptest.NewRecorder()
+		router.ServeHTTP(res, req)
 
-		router.ServeHTTP(response, req)
+		assert.Equal(t, http.StatusBadRequest, res.Code)
+	})
 
-		assert.Equal(t, http.StatusBadRequest, response.Code)
+	t.Run("valid user", func(t *testing.T) {
+		userService := &userServiceMock{
+			IsValidFn: func(u *domain.User) bool {
+				return true
+			},
+			CreateFn: func(u *domain.User) (user *domain.User, e error) {
+				return u, nil
+			},
+		}
 
-		assert.Equal(t, 1, userService.IsValidCount)
+		router := NewHandler(userService)
+
+		body := []byte(`{"name": "Ricardo Longa", "age": 18}`)
+		req, _ := http.NewRequest(http.MethodPost, "/v1/users", bytes.NewReader(body))
+
+		res := httptest.NewRecorder()
+		router.ServeHTTP(res, req)
+		assert.Equal(t, http.StatusCreated, res.Code)
+
+		body, err := ioutil.ReadAll(res.Body)
+		assert.NoError(t, err)
+		assert.NotEmpty(t, body)
+
+		var u domain.User
+		assert.NoError(t, json.Unmarshal(body, &u))
+		assert.Equal(t, "Ricardo Longa", u.Name)
+		assert.Equal(t, 18, u.Age)
 	})
 }

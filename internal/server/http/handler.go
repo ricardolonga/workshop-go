@@ -1,17 +1,17 @@
 package http
 
 import (
+	"github.com/ricardolonga/workshop-go/domain"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/ricardolonga/workshop-go/domain"
 )
 
 type handler struct {
-	userService domain.UserService
+	userService domain.Service
 }
 
-func NewHandler(userService domain.UserService) http.Handler {
+func NewHandler(userService domain.Service) http.Handler {
 	handler := &handler{
 		userService: userService,
 	}
@@ -22,10 +22,7 @@ func NewHandler(userService domain.UserService) http.Handler {
 	router.Use(handler.recovery())
 
 	v1 := router.Group("/v1")
-
 	v1.POST("/users", handler.postUser)
-	v1.GET("/users/:id", handler.getUser)
-	v1.DELETE("/users/:id", handler.deleteUser)
 
 	return router
 }

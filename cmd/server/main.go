@@ -1,42 +1,21 @@
 package main
 
 import (
+	"github.com/ricardolonga/workshop-go/domain/user"
 	"os"
 	"os/signal"
 	"syscall"
 
-	"github.com/NeowayLabs/logger"
-	"github.com/ricardolonga/workshop-go/domain/user"
 	"github.com/ricardolonga/workshop-go/internal/server/http"
-	"github.com/ricardolonga/workshop-go/internal/storage/mongo"
 )
 
 const (
 	envWorkshopServicePort = "WORKSHOP_SERVICE_PORT"
-	envDatabaseName        = "DATABASE_NAME"
-	envMongoURL            = "MONGO_URL"
-
-	defaultDatabaseName = "workshop"
-	defaultPort         = "8080"
+	defaultPort            = "8080"
 )
 
 func main() {
-	mongoURL := getMongoURL()
-	databaseName := getDatabaseName()
-
-	/*
-	 * Storages...
-	 */
-	userStorage, err := mongo.NewUserStorage(mongoURL, databaseName)
-	if err != nil {
-		logger.Error("error on creating a user storage instance: %q", err)
-		return
-	}
-
-	/*
-	 * Services...
-	 */
-	userService := user.NewService(userStorage)
+	userService := user.NewService()
 
 	/*
 	 * Handler...
@@ -60,14 +39,6 @@ func main() {
 
 func getApplicationPort() string {
 	return getEnvVar(envWorkshopServicePort, defaultPort)
-}
-
-func getMongoURL() string {
-	return getEnvVar(envMongoURL)
-}
-
-func getDatabaseName() string {
-	return getEnvVar(envDatabaseName, defaultDatabaseName)
 }
 
 func getEnvVar(envVar string, defaultValue ...string) string {
